@@ -4,7 +4,7 @@
 #include<glm/gtc/matrix_transform.hpp>
 #include<glm/gtc/type_ptr.hpp>
 #include<GLFW/glfw3.h>
-#include <stb/stb_image.h>
+#include "stb_image.h"
 
 #include"shaderClass.h"
 #include"VAO.h"
@@ -17,20 +17,18 @@
 // Vertices coordinates
 GLfloat vertices[] =
 {
-	-0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, 			0.8f, 0.3f, 0.02f,// Lower left corner
-	0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, 			0.8f, 0.3f, 0.02f,// Lower right corner
-	0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f, 			1.0f, 0.6f, 0.32f,// Upper corner
-	-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,			0.9f, 0.45f, 0.17f,// Inner left
-	0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f, 			0.9f, 0.45f, 0.17f,// Inner right
-	0.0f, -0.5f * float(sqrt(3)) / 3, 0.0f, 			0.8f, 0.3f, 0.02f// Inner down
+	-0.5f, -0.5f, 0.0f, 		0.8f, 0.3f, 0.02f, 		0.0f, 0.0f,// Lower left corner
+	-0.5f, 0.5f, 0.0f, 			0.8f, 0.3f, 0.02f, 		0.0f, 1.0f,// Upper left corner
+	 0.5f, 0.5f, 0.0f, 			1.0f, 0.6f, 0.32f, 		1.0f, 1.0f,// Upper right corner
+	 0.5f, -0.5f, 0.0f,			0.9f, 0.45f, 0.17f, 	1.0f, 1.0f// Lower right corner
+
 };
 
 // Indices for vertices order
 GLuint indices[] =
 {
-	0, 3, 5, // Lower left triangle
-	3, 2, 4, // Lower right triangle
-	5, 4, 1 // Upper triangle
+	0,2,1,
+	0,3,2
 };
 
 const unsigned int width = 800;
@@ -85,19 +83,49 @@ int main()
 	EBO EBO1(indices, sizeof(indices));
 
 	// Links VBO to VAO
-	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6*sizeof(float), (void*)0);
-	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6*sizeof(float), (void*)(3 * sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
+	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	VAO1.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+
 	// Unbind all to prevent accidentally modifying them
 	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
 
-	
+	// gets ID of uniform called "scale"
 	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
+
+	//texture
+	int widthImg, heightImg, numColCh;
+	unsigned char* bytes = stbi_load("src/rust.jpg", &widthImg, &heightImg, &numColCh, 0);
+	if (!bytes) {
+    std::cout << "Failed to load texture!" << std::endl;
+	}
+
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexImage2D(GL_TEXTURE_2D, 0 , GL_RGB, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	stbi_image_free(bytes);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	GLuint tex0Uni = glGetUniformLocation(shaderProgram.ID, "tex0");
+	shaderProgram.Activate();
+	glUniform1i(tex0Uni, 0);
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
-	{
+	{ 
 		// Specify the color of the background
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		// Clean the back buffer and assign the new color to it
@@ -109,7 +137,7 @@ int main()
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 proj = glm::mat4(1.0f);
 		view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
-		view = glm::perspective(glm::radians(45.0f), (float)(width/height), 0.1f, 100.0f);
+		proj = glm::perspective(glm::radians(45.0f), (float)(width/height), 0.1f, 100.0f);
 
 		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 		glUniformMatrix4fv(modelLoc,1, GL_FALSE, glm::value_ptr(model));
@@ -119,10 +147,11 @@ int main()
 		glUniformMatrix4fv(projLoc,1, GL_FALSE, glm::value_ptr(proj));
 
 		glUniform1f(uniID, 0.5f);
+		glBindTexture(GL_TEXTURE_2D, texture);
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices
-		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6 , GL_UNSIGNED_INT, 0);
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
@@ -135,6 +164,7 @@ int main()
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
+	glDeleteTextures(1, &texture);
 	shaderProgram.Delete();
 	// Delete window before ending the program
 	glfwDestroyWindow(window);

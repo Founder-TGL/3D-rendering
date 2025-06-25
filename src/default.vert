@@ -3,9 +3,14 @@
 layout (location = 0) in vec3 aPos;
 //color
 layout (location = 1) in vec3 aColor;
+//texture
+layout(location = 2) in vec3 aTex;
 
 //outputs the color for the fragment shader
 out vec3 color;
+
+//outputs the texture for the fragment shader
+out vex 2 texCoord;
 
 //controls the scale of the vertices
 uniform float scale;
@@ -24,4 +29,5 @@ void main()
    //
    //assigns thbe colors from the vertex data to "color"
    color = aColor;
+   texCoord = aTex;
 }
