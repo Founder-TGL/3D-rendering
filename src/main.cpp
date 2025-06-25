@@ -82,23 +82,43 @@ int main()
 
 
 	// Generates Vertex Array Object and binds it
-	VAO VAO1;
-	VAO1.Bind();
+	VAO pyramidVAO;
+	pyramidVAO.Bind();
 
 	// Generates Vertex Buffer Object and links it to pyramidVertices
 	VBO pyramidVBO(pyramidVertices, pyramidVerticesSize);
+
 	// Generates Element Buffer Object and links it to pyramidIndices
 	EBO pyramidEBO(pyramidIndices, pyramidIndicesSize);
 
 	// Links VBO to VAO
-	VAO1.LinkAttrib(pyramidVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-	VAO1.LinkAttrib(pyramidVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	pyramidVAO.LinkAttrib(pyramidVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	pyramidVAO.LinkAttrib(pyramidVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 
 	// Unbind all to prevent accidentally modifying them
-	VAO1.Unbind();
+	pyramidVAO.Unbind();
 	pyramidVBO.Unbind();
 	pyramidEBO.Unbind();
 
+
+
+	// Generates Vertex Array Object and binds it
+	VAO cubeVAO;
+	cubeVAO.Bind();
+
+	// Generates Vertex Buffer Object and links it to pyramidVertices
+	VBO cubeVBO(cubeVertices, cubeVerticesSize);
+	// Generates Element Buffer Object and links it to pyramidIndices
+	EBO cubeEBO(cubeIndices, cubeIndicesSize);
+
+	// Links VBO to VAO
+	cubeVAO.LinkAttrib(cubeVBO, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
+	cubeVAO.LinkAttrib(cubeVBO, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+
+	// Unbind all to prevent accidentally modifying them
+	cubeVAO.Unbind();
+	cubeVBO.Unbind();
+	cubeEBO.Unbind();
 
 
 	// //texture (not working will trouble shoot later)
@@ -118,18 +138,25 @@ int main()
 		// Tell OpenGL which Shader Program we want to use
 		shaderProgram.Activate();
 		
-		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 		camera.Inputs(window);
+		camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
+
+		glm::mat4 model = glm::mat4(1.0f);
+		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 
 
+		// Draw pyramid
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		pyramidVAO.Bind();
+		glDrawElements(GL_TRIANGLES, pyramidIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
+		// Draw cube
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		cubeVAO.Bind();
+		glDrawElements(GL_TRIANGLES, cubeIndicesSize / sizeof(int), GL_UNSIGNED_INT, 0);
 
 
-
-
-		// Bind the VAO so OpenGL knows to use it
-		VAO1.Bind();
-		// Draw primitives, number of pyramidIndices, datatype of pyramidIndices, index of pyramidIndices
-		glDrawElements(GL_TRIANGLES, pyramidIndicesSize/sizeof(int) , GL_UNSIGNED_INT, 0);
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
@@ -139,14 +166,12 @@ int main()
 
 
 	// Delete all the objects we've created
-	VAO1.Delete();
-	pyramidVBO.Delete();
-	pyramidEBO.Delete();
-	// glDeleteTextures(1, &texture);
+	pyramidVAO.Delete(); cubeVAO.Delete();
+	pyramidVBO.Delete(); pyramidEBO.Delete();
+	cubeVBO.Delete(); cubeEBO.Delete();
 	shaderProgram.Delete();
-	// Delete window before ending the program
 	glfwDestroyWindow(window);
-	// Terminate GLFW before ending the program
 	glfwTerminate();
 	return 0;
+
 }
