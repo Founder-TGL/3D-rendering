@@ -13,6 +13,10 @@ std::string get_file_contents(const char* filename)
 		in.read(&contents[0], contents.size());
 		in.close();
 		return(contents);
+	}else {
+		std::cerr << "Error: Could not open file " << filename << std::endl;
+        perror("File Open Error"); // Prints system error message
+        throw std::runtime_error("Failed to open file: " + std::string(filename));
 	}
 	throw(errno);
 }
