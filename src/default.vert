@@ -1,33 +1,33 @@
 #version 330 core
-// position/ cords
+
+// Positions/Coordinates
 layout (location = 0) in vec3 aPos;
-//color
+// Colors
 layout (location = 1) in vec3 aColor;
-//texture
-layout(location = 2) in vec3 aTex;
+// Texture Coordinates
+layout (location = 2) in vec2 aTex;
 
-//outputs the color for the fragment shader
+
+// Outputs the color for the Fragment Shader
 out vec3 color;
-
-//outputs the texture for the fragment shader
+// Outputs the texture coordinates to the fragment shader
 out vec2 texCoord;
 
-//controls the scale of the vertices
+// Controls the scale of the vertices
 uniform float scale;
 
+// Inputs the matrices needed for 3D viewing with perspective
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 
 
-
 void main()
 {
-   //outputs the positions and coordinates of the vertices
-   gl_Position = vec4(aPos.x + (aPos.x*scale), aPos.y + (aPos.y*scale), aPos.z + (aPos.z * scale), 1.0);
-   //model * view * proj* vec4(aPos, 1.0);
-   //
-   //assigns thbe colors from the vertex data to "color"
-   color = aColor;
-   texCoord = aTex;
+	// Outputs the positions/coordinates of all vertices
+	gl_Position = proj * view * model * vec4(aPos, 1.0);
+	// Assigns the colors from the Vertex Data to "color"
+	color = aColor;
+	// Assigns the texture coordinates from the Vertex Data to "texCoord"
+	texCoord = aTex;
 }
