@@ -67,7 +67,7 @@ int main()
 	// Generates Shader object using shaders defualt.vert and default.frag
 	Shader shaderProgram("default.vert", "default.frag");
 
-dd
+
 
 	// Generates Vertex Array Object and binds it
 	VAO VAO1;
