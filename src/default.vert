@@ -10,7 +10,7 @@ layout(location = 2) in vec3 aTex;
 out vec3 color;
 
 //outputs the texture for the fragment shader
-out vex 2 texCoord;
+out vec2 texCoord;
 
 //controls the scale of the vertices
 uniform float scale;

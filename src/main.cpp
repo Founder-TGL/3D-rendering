@@ -95,33 +95,37 @@ int main()
 	// gets ID of uniform called "scale"
 	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
-	//texture
-	int widthImg, heightImg, numColCh;
-	unsigned char* bytes = stbi_load("src/rust.jpg", &widthImg, &heightImg, &numColCh, 0);
-	if (!bytes) {
-    std::cout << "Failed to load texture!" << std::endl;
-	}
+	// //texture
+	
+	// int widthImg, heightImg, numColCh;
+	// stbi_set_flip_vertically_on_load(true);
+	// unsigned char* bytes = stbi_load("C:/rust.jpg", &widthImg, &heightImg, &numColCh, 0);
+	// if (!bytes) {
+    // std::cout << "Failed to load texture!" << std::endl;
+	// std::cout << "STB Error: " << stbi_failure_reason() << std::endl;
+    // return -1;
+	// } std::cout << "passed checkpoint actual\n";
 
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	// GLuint texture;
+	// glGenTextures(0, &texture);
+	// glActiveTexture(GL_TEXTURE0);
+	// glBindTexture(GL_TEXTURE_2D, texture);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glTexImage2D(GL_TEXTURE_2D, 0 , GL_RGB, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	// glTexImage2D(GL_TEXTURE_2D, 0 , GL_RGB, widthImg, heightImg, 0, GL_RGB, GL_UNSIGNED_BYTE, bytes);
+	// glGenerateMipmap(GL_TEXTURE_2D);
 
-	stbi_image_free(bytes);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	// stbi_image_free(bytes);
+	// glBindTexture(GL_TEXTURE_2D, 0);
 
-	GLuint tex0Uni = glGetUniformLocation(shaderProgram.ID, "tex0");
-	shaderProgram.Activate();
-	glUniform1i(tex0Uni, 0);
+	// GLuint tex0Uni = glGetUniformLocation(shaderProgram.ID, "tex0");
+	// shaderProgram.Activate();
+	// glUniform1i(tex0Uni, 0);
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
@@ -133,21 +137,21 @@ int main()
 		// Tell OpenGL which Shader Program we want to use
 		shaderProgram.Activate();
 
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 proj = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
-		proj = glm::perspective(glm::radians(45.0f), (float)(width/height), 0.1f, 100.0f);
+		// glm::mat4 model = glm::mat4(1.0f);
+		// glm::mat4 view = glm::mat4(1.0f);
+		// glm::mat4 proj = glm::mat4(1.0f);
+		// view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
+		// proj = glm::perspective(glm::radians(45.0f), (float)(width/height), 0.1f, 100.0f);
 
-		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
-		glUniformMatrix4fv(modelLoc,1, GL_FALSE, glm::value_ptr(model));
-		int viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
-		glUniformMatrix4fv(viewLoc,1, GL_FALSE, glm::value_ptr(view));
-		int projLoc = glGetUniformLocation(shaderProgram.ID, "proj");
-		glUniformMatrix4fv(projLoc,1, GL_FALSE, glm::value_ptr(proj));
+		// int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
+		// glUniformMatrix4fv(modelLoc,1, GL_FALSE, glm::value_ptr(model));
+		// int viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
+		// glUniformMatrix4fv(viewLoc,1, GL_FALSE, glm::value_ptr(view));
+		// int projLoc = glGetUniformLocation(shaderProgram.ID, "proj");
+		// glUniformMatrix4fv(projLoc,1, GL_FALSE, glm::value_ptr(proj));
 
 		glUniform1f(uniID, 0.5f);
-		glBindTexture(GL_TEXTURE_2D, texture);
+		// glBindTexture(GL_TEXTURE_2D, texture);
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices
