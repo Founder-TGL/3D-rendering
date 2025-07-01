@@ -62,7 +62,7 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);  // needed for 3D
 
-    Shader shader("shaders/vertex.glsl", "shaders/fragment.glsl");
+    Shader shader("src/shaders/vertex.glsl", "src/shaders/fragment.glsl");
 
     unsigned int VAO, VBO;
     glGenVertexArrays(1, &VAO); 
