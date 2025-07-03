@@ -1,4 +1,5 @@
-# BUILD AND RUN FROM MAIN, THE EXE DOES NOT WORK
+# DOWNLOAD AND RUN THE PROGRAM FROM THE RELEASES PAGE
+
 # OpenGL TRAINGING
 
 I am teaching myself how to use open gl to create my own 3d projects, so far its been a difficult endeavor but I Believe in myself
